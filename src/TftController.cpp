@@ -65,6 +65,9 @@ void TftController::showDeviceScanScreen() {
     renderScanResultItem(results[i].name.c_str(), results[i].status.c_str(), results[i].statusColor,
                          startY + i * lineHeight);
   }
+
+  // Reset text datum to left baseline
+  tft.setTextDatum(TL_DATUM);
 }
 
 void TftController::renderOuterBorder() {
@@ -114,14 +117,16 @@ void TftController::renderScanResultItem(const char* name, const char* status, u
   tft.drawBitmap(33, y, image_choice_bullet_off_bits, 15, 16, TFT_WHITE);
 
   // Name
+  tft.setTextDatum(L_BASELINE);
   tft.setTextColor(0xE9F);
   tft.setFreeFont(&FreeSerifBold9pt7b);
-  tft.drawString(name, 55, y);
+  tft.drawString(name, 55, y + 13);
 
   // Status
+  tft.setTextDatum(R_BASELINE);
   tft.setTextColor(statusColor);
   tft.setFreeFont(&FreeMonoBold12pt7b);
-  tft.drawRightString(status, 445, y - 2, 1);
+  tft.drawString(status, 445, y + 13);
 }
 
 void TftController::updateRemainingTime(int32_t hours, int32_t minutes, int32_t seconds) {
