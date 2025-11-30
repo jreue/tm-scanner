@@ -12,7 +12,7 @@ class TftController {
     void enableBacklight();
     void disableBacklight();
     void updateRemainingTime(int32_t hours, int32_t minutes, int32_t seconds);
-    void showScanResultsScreen();
+    void showDeviceScanScreen();
 
   private:
     TFT_eSPI tft;
@@ -20,10 +20,13 @@ class TftController {
     void showBootScreen();
     void showMainScreen();
 
-    void displayRemainingTimeLabel();
+    void renderOuterBorder();
+    void renderDividerLines();
+    void renderSignalContainer();
+    void renderHeaderText();
+    void renderRemainingTimeLabel();
+    void renderRemainingTimeSuffix();
 
-    // void testDisplay();
-    // void printPinConfig();
-    // const char* pinToString(int32_t pin);
-    // void drawPinConfig(int32_t idx, const char* pinName, int32_t pin, uint32_t color);
+    void renderScanResultItem(const char* name, const char* status, uint16_t statusColor,
+                              int32_t y);
 };

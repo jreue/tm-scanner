@@ -18,7 +18,7 @@ void loop() {
   int buttonState = digitalRead(SCAN_PIN);
 
   if (buttonState == LOW && !scanInProgress) {
-    tftController.showScanResultsScreen();
+    tftController.showDeviceScanScreen();
 
     delay(500);
 
