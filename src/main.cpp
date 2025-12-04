@@ -9,13 +9,23 @@ void setup() {
   Serial.begin(115200);
   Serial2.begin(UART_BAUD_RATE, SERIAL_8N1, UART_RX_PIN, UART_TX_PIN);
 
-  pinMode(SCAN_PIN, INPUT_PULLUP);
+  pinMode(SCAN_DEVICE_PIN, INPUT_PULLUP);
+  pinMode(SCAN_ENVIRONMENT_PIN, INPUT_PULLUP);
+  pinMode(EXTRA_PIN, INPUT_PULLUP);
 
   tftController.setup();
 }
 
 void loop() {
-  int buttonState = digitalRead(SCAN_PIN);
+  int buttonState = digitalRead(SCAN_DEVICE_PIN);
+
+  if (digitalRead(SCAN_ENVIRONMENT_PIN) == LOW) {
+    Serial.println("ENV PIN");
+  }
+
+  if (digitalRead(EXTRA_PIN) == LOW) {
+    Serial.println("EXTRA PIN");
+  }
 
   if (buttonState == LOW && !scanInProgress) {
     tftController.showDeviceScanScreen();
