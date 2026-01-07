@@ -1,9 +1,12 @@
+#include "EspNowHelper.h"
 #include "TftController.h"
 #include "hardware_config.h"
 
 TftController tftController;
 
 bool scanInProgress = false;
+uint8_t hubAddress[] = HUB_MAC_ADDRESS;
+EspNowHelper espNowHelper;
 
 void setup() {
   Serial.begin(115200);
@@ -14,6 +17,9 @@ void setup() {
   pinMode(EXTRA_PIN, INPUT_PULLUP);
 
   tftController.setup();
+
+  espNowHelper.begin(hubAddress, DEVICE_ID);
+  espNowHelper.sendConnected();
 }
 
 void loop() {
