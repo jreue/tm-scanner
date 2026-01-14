@@ -31,5 +31,8 @@ class TftController {
 
     void renderAllScanItems();
     void renderScanResultItem(const ScanResult& result, size_t index);
+    void renderItemConnection(size_t index, bool connected);
+    void renderItemName(size_t index, const String& name);
+    void renderItemStatus(size_t index, const String& status, uint16_t statusColor);
     int32_t calculateItemY(size_t index);
 };

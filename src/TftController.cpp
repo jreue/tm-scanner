@@ -112,20 +112,37 @@ void TftController::renderAllScanItems() {
 void TftController::renderScanResultItem(const ScanResult& result, size_t index) {
   int32_t y = calculateItemY(index);
 
-  // Bullet
-  tft.drawBitmap(33, y, image_choice_bullet_off_bits, 15, 16, TFT_WHITE);
+  renderItemConnection(index, index % 2 == 0);
+  renderItemName(index, result.name);
+  renderItemStatus(index, result.status, result.statusColor);
+}
 
-  // Name
+void TftController::renderItemConnection(size_t index, bool connected) {
+  int32_t y = calculateItemY(index);
+
+  if (connected) {
+    tft.drawBitmap(33, y, image_choice_bullet_on_bits, 15, 16, TFT_GREEN);
+  } else {
+    tft.drawBitmap(33, y, image_choice_bullet_off_bits, 15, 16, TFT_WHITE);
+  }
+}
+
+void TftController::renderItemName(size_t index, const String& name) {
+  int32_t y = calculateItemY(index);
+
   tft.setTextDatum(L_BASELINE);
   tft.setTextColor(0xE9F);
   tft.setFreeFont(&FreeSerifBold9pt7b);
-  tft.drawString(result.name, 55, y + 13);
+  tft.drawString(name, 55, y + 13);
+}
 
-  // Status
+void TftController::renderItemStatus(size_t index, const String& status, uint16_t statusColor) {
+  int32_t y = calculateItemY(index);
+
   tft.setTextDatum(R_BASELINE);
-  tft.setTextColor(result.statusColor);
+  tft.setTextColor(statusColor);
   tft.setFreeFont(&FreeMonoBold12pt7b);
-  tft.drawString(result.status, 445, y + 13);
+  tft.drawString(status, 445, y + 13);
 }
 
 int32_t TftController::calculateItemY(size_t index) {
