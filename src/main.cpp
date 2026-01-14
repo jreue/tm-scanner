@@ -8,10 +8,24 @@ bool scanInProgress = false;
 uint8_t hubAddress[] = HUB_MAC_ADDRESS;
 EspNowHelper espNowHelper;
 
+// Generic Message Handler
+void handleESPNowDataReceived(const uint8_t* mac, const uint8_t* incomingDataRaw, int len);
+
+// Button Handlers
+void handleScanDeviceButtonPress();
+void handleScanEnvironmentButtonPress();
+void handleExtraButtonPress();
+
+void handleDeviceMessage(const DeviceMessage& msg);
+
 void setup() {
   Serial.begin(115200);
-  Serial2.begin(UART_BAUD_RATE, SERIAL_8N1, UART_RX_PIN, UART_TX_PIN);
+  Serial.println("Scanner Starting...");
+  Serial.printf("Scanner Device ID: %d\n", DEVICE_ID);
 
+  Serial.printf("Scan Device PIN: %d\n", SCAN_DEVICE_PIN);
+  Serial.printf("Scan Environment PIN: %d\n", SCAN_ENVIRONMENT_PIN);
+  Serial.printf("Extra PIN: %d\n", EXTRA_PIN);
   pinMode(SCAN_DEVICE_PIN, INPUT_PULLUP);
   pinMode(SCAN_ENVIRONMENT_PIN, INPUT_PULLUP);
   pinMode(EXTRA_PIN, INPUT_PULLUP);
@@ -20,41 +34,75 @@ void setup() {
 
   espNowHelper.begin(hubAddress, DEVICE_ID);
   espNowHelper.sendConnected();
+
+  esp_now_register_recv_cb(handleESPNowDataReceived);
 }
 
 void loop() {
-  int buttonState = digitalRead(SCAN_DEVICE_PIN);
+  if (digitalRead(SCAN_DEVICE_PIN) == LOW && !scanInProgress) {
+    scanInProgress = true;
+    handleScanDeviceButtonPress();
+    delay(500);  // Debounce delay
+  }
 
   if (digitalRead(SCAN_ENVIRONMENT_PIN) == LOW) {
-    Serial.println("ENV PIN");
+    handleScanEnvironmentButtonPress();
   }
 
   if (digitalRead(EXTRA_PIN) == LOW) {
-    Serial.println("EXTRA PIN");
+    handleExtraButtonPress();
   }
 
-  if (buttonState == LOW && !scanInProgress) {
-    tftController.showDeviceScanScreen();
+  delay(200);
+}
 
-    delay(500);
+void handleScanEnvironmentButtonPress() {
+  Serial.println("Pressed Scan Environment Button");
+}
 
-    Serial.println("START_SCAN");
-    // send a message indicating scan started
-    scanInProgress = true;
+void handleScanDeviceButtonPress() {
+  Serial.println("Pressed Scan Device Button");
+
+  tftController.showDeviceScanScreen();
+}
+
+void handleExtraButtonPress() {
+  Serial.println("Pressed Extra Button");
+}
+
+void handleESPNowDataReceived(const uint8_t* mac, const uint8_t* incomingDataRaw, int len) {
+  // Read message header to determine type
+  EspNowHeader header;
+  memcpy(&header, incomingDataRaw, sizeof(EspNowHeader));
+
+  Serial.println("--- ESP-NOW Data Received ---");
+  Serial.print("MAC Address: ");
+  for (int i = 0; i < 6; i++) {
+    Serial.printf("%02X", mac[i]);
+    if (i < 5)
+      Serial.print(":");
+  }
+  Serial.println();
+
+  Serial.printf("ESP ID: %d\n", header.id);
+  Serial.printf("Message Type: %d\n", header.messageType);
+
+  if (header.messageType == MSG_TYPE_CONNECT || header.messageType == MSG_TYPE_STATUS ||
+      header.messageType == MSG_TYPE_DISCONNECT) {
+    // Device Messages
+    DeviceMessage deviceMsg;
+    memcpy(&deviceMsg, incomingDataRaw, sizeof(DeviceMessage));
+    handleDeviceMessage(deviceMsg);
+  } else {
+    Serial.println("Unknown Message Type Received");
   }
 
-  if (scanInProgress & Serial2.available()) {
-    String msg = Serial2.readStringUntil('\n');
-    Serial.print("Received: ");
-    Serial.println(msg);
+  Serial.println("-----------------------------");
+}
 
-    // Parse CSV string: "hours,minutes,seconds"
-    int32_t hours = 0, minutes = 0, seconds = 0;
-    int parsed = sscanf(msg.c_str(), "%d,%d,%d", &hours, &minutes, &seconds);
-    if (parsed == 3) {
-      tftController.updateRemainingTime(hours, minutes, seconds);
-    } else {
-      Serial.println("Error: Invalid time format received.");
-    }
-  }
+void handleDeviceMessage(const DeviceMessage& msg) {
+  Serial.println("Handling Device Message:");
+  Serial.printf("  Device ID: %d\n", msg.id);
+  Serial.printf("  Message Type: %d\n", msg.messageType);
+  Serial.printf("  Is Calibrated: %s\n", msg.isCalibrated ? "Yes" : "No");
 }

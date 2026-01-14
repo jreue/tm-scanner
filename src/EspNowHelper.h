@@ -11,10 +11,23 @@
 #define MSG_TYPE_DATE_UPDATE 3
 #define MSG_TYPE_SCANNER_CONNECTED 4
 
+// Common header for all messages
+struct EspNowHeader {
+    uint8_t id;
+    uint8_t messageType;
+};
+
 typedef struct ScannerMessage {
     uint8_t id;
     uint8_t messageType;  // MSG_TYPE_CONNECT, MSG_TYPE_STATUS, MSG_TYPE_DISCONNECT
 } ScannerMessage;
+
+// Device message (connection/calibration status)
+struct DeviceMessage {
+    uint8_t id;
+    uint8_t messageType;
+    bool isCalibrated;
+};
 
 class EspNowHelper {
   public:
@@ -26,7 +39,8 @@ class EspNowHelper {
   private:
     uint8_t* receiverAddress;
     ScannerMessage message;
+    DeviceMessage deviceMessage;
 
     void sendCalibrationStatus();
-    static void handleDataSent(const uint8_t* mac_addr, esp_now_send_status_t status);
+    static void handleESPNowDataSent(const uint8_t* mac_addr, esp_now_send_status_t status);
 };

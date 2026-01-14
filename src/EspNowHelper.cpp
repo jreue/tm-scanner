@@ -10,50 +10,43 @@ void EspNowHelper::begin(uint8_t* hubMacAddress, uint8_t deviceId) {
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
+  Serial.printf("HUB MAC Address: %s\n", WiFi.macAddress().c_str());
 
-  // Print MAC Address
-  Serial.println("Device starting with ESP-NOW");
-  Serial.print("Device MAC Address: ");
-  Serial.println(WiFi.macAddress());
-  Serial.print("Device ID: ");
-  Serial.println(deviceId);
-
-  // Initialize ESP-NOW
+  Serial.println("Initializing ESP-NOW...");
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");
     return;
   }
 
-  // Register send callback
-  esp_now_register_send_cb(handleDataSent);
+  esp_now_register_send_cb(handleESPNowDataSent);
 
-  // Register peer
+  Serial.println("Adding ESP-NOW Peers...");
   esp_now_peer_info_t peerInfo;
   memset(&peerInfo, 0, sizeof(peerInfo));
   memcpy(peerInfo.peer_addr, hubMacAddress, 6);
   peerInfo.channel = 0;
   peerInfo.encrypt = false;
 
-  // Add peer
+  // Add HUB peer
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Failed to add peer");
+    Serial.println("Failed to add HUB peer");
     return;
   }
 }
 
-void EspNowHelper::sendConnected() {
-  Serial.println("[Scanner Connected]");
-  message.messageType = MSG_TYPE_SCANNER_CONNECTED;
-  sendCalibrationStatus();
-}
-
-void EspNowHelper::handleDataSent(const uint8_t* mac_addr, esp_now_send_status_t status) {
+void EspNowHelper::handleESPNowDataSent(const uint8_t* mac_addr, esp_now_send_status_t status) {
   if (status == ESP_NOW_SEND_SUCCESS) {
     Serial.println("  ✓ Delivery confirmed");
   } else {
     Serial.println("  ✗ Delivery failed");
   }
   Serial.println("------------------------");
+}
+
+void EspNowHelper::sendConnected() {
+  Serial.println("Sending Connected Message...");
+  message.messageType = MSG_TYPE_SCANNER_CONNECTED;
+  sendCalibrationStatus();
 }
 
 void EspNowHelper::sendCalibrationStatus() {
