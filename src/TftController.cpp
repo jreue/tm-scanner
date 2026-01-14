@@ -112,12 +112,12 @@ void TftController::renderAllScanItems() {
 void TftController::renderScanResultItem(const ScanResult& result, size_t index) {
   int32_t y = calculateItemY(index);
 
-  renderItemConnection(index, false, false);
+  renderItemStateIndicator(index, false, false);
   renderItemName(index, result.name);
   renderItemStatus(index, result.status, result.statusColor);
 }
 
-void TftController::renderItemConnection(size_t index, bool connected, bool calibrated) {
+void TftController::renderItemStateIndicator(size_t index, bool connected, bool calibrated) {
   int32_t y = calculateItemY(index);
 
   if (!connected) {
@@ -127,6 +127,16 @@ void TftController::renderItemConnection(size_t index, bool connected, bool cali
   } else {
     tft.drawBitmap(33, y, image_choice_bullet_on_bits, 15, 16, TFT_GREEN);
   }
+}
+
+void TftController::updateItemStateIndicator(size_t index, bool connected, bool calibrated) {
+  int32_t y = calculateItemY(index);
+
+  // Clear the area where the bitmap is drawn
+  tft.fillRect(33, y, 15, 16, COLOR_BACKGROUND);
+
+  // Redraw with new state
+  renderItemStateIndicator(index, connected, calibrated);
 }
 
 void TftController::renderItemName(size_t index, const String& name) {

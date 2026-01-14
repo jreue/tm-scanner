@@ -1,4 +1,5 @@
 #include "EspNowHelper.h"
+#include "ScanResults.h"
 #include "TftController.h"
 #include "hardware_config.h"
 
@@ -105,4 +106,13 @@ void handleDeviceMessage(const DeviceMessage& msg) {
   Serial.printf("  Device ID: %d\n", msg.id);
   Serial.printf("  Message Type: %d\n", msg.messageType);
   Serial.printf("  Is Calibrated: %s\n", msg.isCalibrated ? "Yes" : "No");
+
+  // Get the index for this device id
+  int index = ScanResults::getIndexById(msg.id);
+  if (index >= 0) {
+    bool connected = (msg.messageType == MSG_TYPE_CONNECT || msg.messageType == MSG_TYPE_STATUS);
+    tftController.updateItemStateIndicator(index, connected, msg.isCalibrated);
+  } else {
+    Serial.printf("  Warning: Unknown device ID %d\n", msg.id);
+  }
 }
