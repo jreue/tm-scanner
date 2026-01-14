@@ -75,7 +75,9 @@ void TftController::renderHeaderText() {
   tft.setTextColor(0xE9F);
   tft.setTextSize(1);
   tft.setFreeFont(&FreeSansBold12pt7b);
-  tft.drawString("TEMPORAL DIAGNOSTICS UNIT", 53, 31);
+  tft.setTextDatum(TC_DATUM);
+  tft.drawString("SHIELD DIAGNOSTICS UNIT", 240, 31);
+  tft.setTextDatum(TL_DATUM);
 }
 
 void TftController::renderSignalContainer() {
