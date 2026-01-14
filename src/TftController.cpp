@@ -112,18 +112,20 @@ void TftController::renderAllScanItems() {
 void TftController::renderScanResultItem(const ScanResult& result, size_t index) {
   int32_t y = calculateItemY(index);
 
-  renderItemConnection(index, false);
+  renderItemConnection(index, false, false);
   renderItemName(index, result.name);
   renderItemStatus(index, result.status, result.statusColor);
 }
 
-void TftController::renderItemConnection(size_t index, bool connected) {
+void TftController::renderItemConnection(size_t index, bool connected, bool calibrated) {
   int32_t y = calculateItemY(index);
 
-  if (connected) {
-    tft.drawBitmap(33, y, image_choice_bullet_on_bits, 15, 16, TFT_GREEN);
-  } else {
+  if (!connected) {
     tft.drawBitmap(33, y, image_choice_bullet_off_bits, 15, 16, TFT_WHITE);
+  } else if (connected && !calibrated) {
+    tft.drawBitmap(33, y, image_choice_bullet_on_bits, 15, 16, TFT_YELLOW);
+  } else {
+    tft.drawBitmap(33, y, image_choice_bullet_on_bits, 15, 16, TFT_GREEN);
   }
 }
 
