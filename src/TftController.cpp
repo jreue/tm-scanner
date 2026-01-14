@@ -114,7 +114,7 @@ void TftController::renderScanResultItem(const ScanResult& result, size_t index)
 
   renderItemStateIndicator(index, false, false);
   renderItemName(index, result.name);
-  renderItemStatus(index, result.status, result.statusColor);
+  renderItemStatusLabel(index, false, false);
 }
 
 void TftController::renderItemStateIndicator(size_t index, bool connected, bool calibrated) {
@@ -139,6 +139,16 @@ void TftController::updateItemStateIndicator(size_t index, bool connected, bool 
   renderItemStateIndicator(index, connected, calibrated);
 }
 
+void TftController::updateItemStatusLabel(size_t index, bool connected, bool calibrated) {
+  int32_t y = calculateItemY(index);
+
+  // Clear the area where the status label is drawn
+  tft.fillRect(300, y - 3, 155, 23, COLOR_BACKGROUND);
+
+  // Redraw with new state
+  renderItemStatusLabel(index, connected, calibrated);
+}
+
 void TftController::renderItemName(size_t index, const String& name) {
   int32_t y = calculateItemY(index);
 
@@ -148,8 +158,22 @@ void TftController::renderItemName(size_t index, const String& name) {
   tft.drawString(name, 55, y + 13);
 }
 
-void TftController::renderItemStatus(size_t index, const String& status, uint16_t statusColor) {
+void TftController::renderItemStatusLabel(size_t index, bool connected, bool calibrated) {
   int32_t y = calculateItemY(index);
+
+  String status;
+  uint16_t statusColor;
+
+  if (!connected) {
+    status = "Offline";
+    statusColor = 0xF800;  // Red
+  } else if (connected && !calibrated) {
+    status = "Calibrate";
+    statusColor = TFT_YELLOW;
+  } else {
+    status = "Engaged";
+    statusColor = TFT_GREEN;
+  }
 
   tft.setTextDatum(R_BASELINE);
   tft.setTextColor(statusColor);

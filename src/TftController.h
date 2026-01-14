@@ -15,6 +15,7 @@ class TftController {
     void disableBacklight();
     void updateRemainingTime(int32_t hours, int32_t minutes, int32_t seconds);
     void updateItemStateIndicator(size_t index, bool connected, bool calibrated);
+    void updateItemStatusLabel(size_t index, bool connected, bool calibrated);
     void showDeviceScanScreen();
 
   private:
@@ -34,6 +35,6 @@ class TftController {
     void renderScanResultItem(const ScanResult& result, size_t index);
     void renderItemStateIndicator(size_t index, bool connected, bool calibrated);
     void renderItemName(size_t index, const String& name);
-    void renderItemStatus(size_t index, const String& status, uint16_t statusColor);
+    void renderItemStatusLabel(size_t index, bool connected, bool calibrated);
     int32_t calculateItemY(size_t index);
 };

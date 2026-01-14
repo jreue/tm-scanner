@@ -112,6 +112,7 @@ void handleDeviceMessage(const DeviceMessage& msg) {
   if (index >= 0) {
     bool connected = (msg.messageType == MSG_TYPE_CONNECT || msg.messageType == MSG_TYPE_STATUS);
     tftController.updateItemStateIndicator(index, connected, msg.isCalibrated);
+    tftController.updateItemStatusLabel(index, connected, msg.isCalibrated);
   } else {
     Serial.printf("  Warning: Unknown device ID %d\n", msg.id);
   }
