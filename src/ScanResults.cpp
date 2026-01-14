@@ -1,13 +1,13 @@
 #include "ScanResults.h"
 
-const ScanResult ScanResults::results[] = {{101, "Temporal Drift Sensor", "Offline", 0xFDA0},
-                                           {102, "Chrono-Stabilizer", "Offline", 0xFDA0},
-                                           {103, "Quantum Flux Regulator", "Offline", 0xFDA0},
-                                           {104, "Dimensional Phase Modulator", "Offline", 0xFDA0},
-                                           {105, "Plasma Containment Field", "Offline", 0xFDA0},
-                                           {106, "Neutrino Emission Matrix", "Offline", 0xFDA0},
-                                           {107, "Environment Scanner", "Enabled", 0x07E0},
-                                           {108, "Uranium Core", "Critical", 0xF800}};
+const ScanResult ScanResults::results[] = {{101, "Temporal Drift Sensor", "Offline", 0xF800},
+                                           {102, "Chrono-Stabilizer", "Offline", 0xF800},
+                                           {103, "Quantum Flux Regulator", "Offline", 0xF800},
+                                           {104, "Dimensional Phase Modulator", "Offline", 0xF800},
+                                           {105, "Plasma Containment Field", "Offline", 0xF800},
+                                           {106, "Neutrino Emission Matrix", "Offline", 0xF800},
+                                           {107, "Environment Scanner", "Offline", 0xF800},
+                                           {108, "Uranium Core", "Offline", 0xF800}};
 
 const size_t ScanResults::resultCount = sizeof(ScanResults::results) / sizeof(ScanResult);
 
