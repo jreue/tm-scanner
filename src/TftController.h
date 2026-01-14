@@ -20,7 +20,7 @@ class TftController {
   private:
     TFT_eSPI tft;
 
-    void showBootScreen();
+    void showBootScreen(int cycles);
     void showMainScreen();
 
     void renderOuterBorder();

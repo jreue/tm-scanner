@@ -15,7 +15,7 @@ void TftController::setup() {
   tft.setRotation(1);  // 1 = landscape, 0 = portrait
 
   enableBacklight();
-  showBootScreen();
+  showBootScreen(2);
   showMainScreen();
 }
 
@@ -27,11 +27,11 @@ void TftController::disableBacklight() {
   digitalWrite(TFT_BL, LOW);
 }
 
-void TftController::showBootScreen() {
+void TftController::showBootScreen(int cycles) {
   tft.fillScreen(COLOR_BACKGROUND);
   String base = "BOOTING";
   int x = 200, y = 150;
-  for (int i = 0; i <= 6; ++i) {
+  for (int i = 0; i <= cycles; ++i) {
     // Clear the area where the text will be drawn (adjust width/height as needed)
     tft.fillRect(x, y - 16, 120, 24, COLOR_BACKGROUND);
     String dots = "";
