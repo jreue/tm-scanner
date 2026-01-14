@@ -5,8 +5,6 @@
 struct ScanResult {
     uint8_t id;
     String name;
-    String status;
-    uint16_t statusColor;
 };
 
 class ScanResults {
