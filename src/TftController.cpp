@@ -16,7 +16,6 @@ void TftController::setup() {
 
   enableBacklight();
   showBootScreen();
-  delay(2000);
   showMainScreen();
 }
 
@@ -56,16 +55,7 @@ void TftController::showDeviceScanScreen() {
   renderSignalContainer();
   renderRemainingTimeLabel();
   renderRemainingTimeSuffix();
-
-  int32_t startY = 75;
-  int32_t lineHeight = 25;
-  const ScanResult* results = ScanResults::getResults();
-  size_t count = ScanResults::getResultCount();
-  for (size_t i = 0; i < count; ++i) {
-    renderScanResultItem(results[i].name.c_str(), results[i].status.c_str(), results[i].statusColor,
-                         startY + i * lineHeight);
-  }
-
+  renderAllScanItems();
   // Reset text datum to left baseline
   tft.setTextDatum(TL_DATUM);
 }
@@ -111,8 +101,17 @@ void TftController::renderRemainingTimeSuffix() {
   tft.drawString("S", 425, 283);
 }
 
-void TftController::renderScanResultItem(const char* name, const char* status, uint16_t statusColor,
-                                         int32_t y) {
+void TftController::renderAllScanItems() {
+  const ScanResult* results = ScanResults::getResults();
+  size_t count = ScanResults::getResultCount();
+  for (size_t i = 0; i < count; ++i) {
+    renderScanResultItem(results[i], i);
+  }
+}
+
+void TftController::renderScanResultItem(const ScanResult& result, size_t index) {
+  int32_t y = calculateItemY(index);
+
   // Bullet
   tft.drawBitmap(33, y, image_choice_bullet_off_bits, 15, 16, TFT_WHITE);
 
@@ -120,13 +119,19 @@ void TftController::renderScanResultItem(const char* name, const char* status, u
   tft.setTextDatum(L_BASELINE);
   tft.setTextColor(0xE9F);
   tft.setFreeFont(&FreeSerifBold9pt7b);
-  tft.drawString(name, 55, y + 13);
+  tft.drawString(result.name, 55, y + 13);
 
   // Status
   tft.setTextDatum(R_BASELINE);
-  tft.setTextColor(statusColor);
+  tft.setTextColor(result.statusColor);
   tft.setFreeFont(&FreeMonoBold12pt7b);
-  tft.drawString(status, 445, y + 13);
+  tft.drawString(result.status, 445, y + 13);
+}
+
+int32_t TftController::calculateItemY(size_t index) {
+  int32_t startY = 75;
+  int32_t lineHeight = 25;
+  return startY + index * lineHeight;
 }
 
 void TftController::updateRemainingTime(int32_t hours, int32_t minutes, int32_t seconds) {

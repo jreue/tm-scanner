@@ -4,6 +4,8 @@
 #include <SPI.h>
 #include <TFT_eSPI.h>
 
+struct ScanResult;
+
 class TftController {
   public:
     TftController();
@@ -27,6 +29,7 @@ class TftController {
     void renderRemainingTimeLabel();
     void renderRemainingTimeSuffix();
 
-    void renderScanResultItem(const char* name, const char* status, uint16_t statusColor,
-                              int32_t y);
+    void renderAllScanItems();
+    void renderScanResultItem(const ScanResult& result, size_t index);
+    int32_t calculateItemY(size_t index);
 };
