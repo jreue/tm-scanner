@@ -1,13 +1,13 @@
 #include "ScanResults.h"
 
-const ScanResult ScanResults::results[] = {{"Temporal Drift Sensor", "Offline", 0xFDA0},
-                                           {"Chrono-Stabilizer", "Offline", 0xFDA0},
-                                           {"Quantum Flux Regulator", "Offline", 0xFDA0},
-                                           {"Dimensional Phase Modulator", "Offline", 0xFDA0},
-                                           {"Plasma Containment Field", "Offline", 0xFDA0},
-                                           {"Neutrino Emission Matrix", "Offline", 0xFDA0},
-                                           {"Environment Scanner", "Enabled", 0x07E0},
-                                           {"Uranium Core", "Critical", 0xF800}};
+const ScanResult ScanResults::results[] = {{101, "Temporal Drift Sensor", "Offline", 0xFDA0},
+                                           {102, "Chrono-Stabilizer", "Offline", 0xFDA0},
+                                           {103, "Quantum Flux Regulator", "Offline", 0xFDA0},
+                                           {104, "Dimensional Phase Modulator", "Offline", 0xFDA0},
+                                           {105, "Plasma Containment Field", "Offline", 0xFDA0},
+                                           {106, "Neutrino Emission Matrix", "Offline", 0xFDA0},
+                                           {107, "Environment Scanner", "Enabled", 0x07E0},
+                                           {108, "Uranium Core", "Critical", 0xF800}};
 
 const size_t ScanResults::resultCount = sizeof(ScanResults::results) / sizeof(ScanResult);
 
@@ -17,4 +17,13 @@ const ScanResult* ScanResults::getResults() {
 
 size_t ScanResults::getResultCount() {
   return resultCount;
+}
+
+int ScanResults::getIndexById(uint8_t id) {
+  for (size_t i = 0; i < resultCount; ++i) {
+    if (results[i].id == id) {
+      return i;
+    }
+  }
+  return -1;
 }

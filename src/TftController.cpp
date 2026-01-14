@@ -112,7 +112,7 @@ void TftController::renderAllScanItems() {
 void TftController::renderScanResultItem(const ScanResult& result, size_t index) {
   int32_t y = calculateItemY(index);
 
-  renderItemConnection(index, index % 2 == 0);
+  renderItemConnection(index, false);
   renderItemName(index, result.name);
   renderItemStatus(index, result.status, result.statusColor);
 }
