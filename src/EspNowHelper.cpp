@@ -1,16 +1,17 @@
 #include "EspNowHelper.h"
 
 EspNowHelper::EspNowHelper() : receiverAddress(nullptr) {
-  message.id = 0;
+  message.deviceId = 0;
+  message.deviceType = DEVICE_TYPE_SCANNER;
 }
 
-void EspNowHelper::begin(uint8_t* hubMacAddress, uint8_t deviceId) {
+void EspNowHelper::begin(uint8_t* hubMacAddress, int scannerId) {
   receiverAddress = hubMacAddress;
-  message.id = deviceId;
+  deviceId = scannerId;
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
-  Serial.printf("HUB MAC Address: %s\n", WiFi.macAddress().c_str());
+  Serial.printf("Scanner MAC Address: %s\n", WiFi.macAddress().c_str());
 
   Serial.println("Initializing ESP-NOW...");
   if (esp_now_init() != ESP_OK) {
@@ -45,14 +46,18 @@ void EspNowHelper::handleESPNowDataSent(const uint8_t* mac_addr, esp_now_send_st
 
 void EspNowHelper::sendConnected() {
   Serial.println("Sending Connected Message...");
-  message.messageType = MSG_TYPE_SCANNER_CONNECTED;
-  sendCalibrationStatus();
+  message.deviceId = deviceId;
+  message.deviceType = DEVICE_TYPE_SCANNER;
+  message.messageType = MSG_TYPE_CONNECT;
+  sendMessage();
 }
 
-void EspNowHelper::sendCalibrationStatus() {
+void EspNowHelper::sendMessage() {
   Serial.println("  → Preparing message:");
   Serial.print("      Device ID: ");
-  Serial.println(message.id);
+  Serial.println(message.deviceId);
+  Serial.print("      Device Type: ");
+  Serial.println(message.deviceType);
   Serial.print("      Message Type: ");
   Serial.println(message.messageType);
 

@@ -85,12 +85,11 @@ void handleESPNowDataReceived(const uint8_t* mac, const uint8_t* incomingDataRaw
   }
   Serial.println();
 
-  Serial.printf("ESP ID: %d\n", header.id);
+  Serial.printf("ESP ID: %d\n", header.deviceId);
+  Serial.printf("Device Type: %d\n", header.deviceType);
   Serial.printf("Message Type: %d\n", header.messageType);
 
-  if (header.messageType == MSG_TYPE_CONNECT || header.messageType == MSG_TYPE_STATUS ||
-      header.messageType == MSG_TYPE_DISCONNECT) {
-    // Device Messages
+  if (header.deviceType == DEVICE_TYPE_MODULE) {
     DeviceMessage deviceMsg;
     memcpy(&deviceMsg, incomingDataRaw, sizeof(DeviceMessage));
     handleDeviceMessage(deviceMsg);
@@ -103,17 +102,17 @@ void handleESPNowDataReceived(const uint8_t* mac, const uint8_t* incomingDataRaw
 
 void handleDeviceMessage(const DeviceMessage& msg) {
   Serial.println("Handling Device Message:");
-  Serial.printf("  Device ID: %d\n", msg.id);
+  Serial.printf("  Device ID: %d\n", msg.deviceId);
   Serial.printf("  Message Type: %d\n", msg.messageType);
   Serial.printf("  Is Calibrated: %s\n", msg.isCalibrated ? "Yes" : "No");
 
   // Get the index for this device id
-  int index = ScanResults::getIndexById(msg.id);
+  int index = ScanResults::getIndexById(msg.deviceId);
   if (index >= 0) {
-    bool connected = (msg.messageType == MSG_TYPE_CONNECT || msg.messageType == MSG_TYPE_STATUS);
+    bool connected = true;  // Since we received a message, the device is connected
     tftController.updateItemStateIndicator(index, connected, msg.isCalibrated);
     tftController.updateItemStatusLabel(index, connected, msg.isCalibrated);
   } else {
-    Serial.printf("  Warning: Unknown device ID %d\n", msg.id);
+    Serial.printf("  Warning: Unknown device ID %d\n", msg.deviceId);
   }
 }
