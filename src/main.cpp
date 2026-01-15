@@ -9,9 +9,6 @@ bool scanInProgress = false;
 uint8_t hubAddress[] = HUB_MAC_ADDRESS;
 EspNowHelper espNowHelper;
 
-// Generic Message Handler
-void handleESPNowDataReceived(const uint8_t* mac, const uint8_t* incomingDataRaw, int len);
-
 // Button Handlers
 void handleScanDeviceButtonPress();
 void handleScanEnvironmentButtonPress();
@@ -34,9 +31,8 @@ void setup() {
   tftController.setup();
 
   espNowHelper.begin(hubAddress, DEVICE_ID);
+  espNowHelper.registerModuleMessageHandler(handleDeviceMessage);
   espNowHelper.sendScannerConnected();
-
-  esp_now_register_recv_cb(handleESPNowDataReceived);
 }
 
 void loop() {
@@ -69,35 +65,6 @@ void handleScanDeviceButtonPress() {
 
 void handleExtraButtonPress() {
   Serial.println("Pressed Extra Button");
-}
-
-void handleESPNowDataReceived(const uint8_t* mac, const uint8_t* incomingDataRaw, int len) {
-  // Read message header to determine type
-  EspNowHeader header;
-  memcpy(&header, incomingDataRaw, sizeof(EspNowHeader));
-
-  Serial.println("--- ESP-NOW Data Received ---");
-  Serial.print("MAC Address: ");
-  for (int i = 0; i < 6; i++) {
-    Serial.printf("%02X", mac[i]);
-    if (i < 5)
-      Serial.print(":");
-  }
-  Serial.println();
-
-  Serial.printf("ESP ID: %d\n", header.deviceId);
-  Serial.printf("Device Type: %d\n", header.deviceType);
-  Serial.printf("Message Type: %d\n", header.messageType);
-
-  if (header.deviceType == DEVICE_TYPE_MODULE) {
-    DeviceMessage deviceMsg;
-    memcpy(&deviceMsg, incomingDataRaw, sizeof(DeviceMessage));
-    handleDeviceMessage(deviceMsg);
-  } else {
-    Serial.println("Unknown Message Type Received");
-  }
-
-  Serial.println("-----------------------------");
 }
 
 void handleDeviceMessage(const DeviceMessage& msg) {
