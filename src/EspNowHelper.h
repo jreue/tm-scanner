@@ -10,13 +10,12 @@ class EspNowHelper {
     EspNowHelper();
 
     void begin(uint8_t* hubMacAddress, int deviceId);
-    void sendConnected();
+    void sendScannerConnected();
 
   private:
     uint8_t* receiverAddress;
     int deviceId;
-    ScannerMessage message;
 
-    void sendMessage();
+    void sendMessage(EspNowHeader& message, size_t messageSize);
     static void handleESPNowDataSent(const uint8_t* mac_addr, esp_now_send_status_t status);
 };

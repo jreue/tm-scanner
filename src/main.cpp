@@ -34,7 +34,7 @@ void setup() {
   tftController.setup();
 
   espNowHelper.begin(hubAddress, DEVICE_ID);
-  espNowHelper.sendConnected();
+  espNowHelper.sendScannerConnected();
 
   esp_now_register_recv_cb(handleESPNowDataReceived);
 }

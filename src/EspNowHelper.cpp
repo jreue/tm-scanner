@@ -1,8 +1,6 @@
 #include "EspNowHelper.h"
 
 EspNowHelper::EspNowHelper() : receiverAddress(nullptr) {
-  message.deviceId = 0;
-  message.deviceType = DEVICE_TYPE_SCANNER;
 }
 
 void EspNowHelper::begin(uint8_t* hubMacAddress, int scannerId) {
@@ -11,7 +9,9 @@ void EspNowHelper::begin(uint8_t* hubMacAddress, int scannerId) {
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
-  Serial.printf("Scanner MAC Address: %s\n", WiFi.macAddress().c_str());
+  Serial.printf("MAC Address: %s\n", WiFi.macAddress().c_str());
+
+  Serial.printf("Device ID: %d\n", deviceId);
 
   Serial.println("Initializing ESP-NOW...");
   if (esp_now_init() != ESP_OK) {
@@ -44,15 +44,7 @@ void EspNowHelper::handleESPNowDataSent(const uint8_t* mac_addr, esp_now_send_st
   Serial.println("------------------------");
 }
 
-void EspNowHelper::sendConnected() {
-  Serial.println("Sending Connected Message...");
-  message.deviceId = deviceId;
-  message.deviceType = DEVICE_TYPE_SCANNER;
-  message.messageType = MSG_TYPE_CONNECT;
-  sendMessage();
-}
-
-void EspNowHelper::sendMessage() {
+void EspNowHelper::sendMessage(EspNowHeader& message, size_t messageSize) {
   Serial.println("  → Preparing message:");
   Serial.print("      Device ID: ");
   Serial.println(message.deviceId);
@@ -61,7 +53,7 @@ void EspNowHelper::sendMessage() {
   Serial.print("      Message Type: ");
   Serial.println(message.messageType);
 
-  esp_err_t result = esp_now_send(receiverAddress, (uint8_t*)&message, sizeof(message));
+  esp_err_t result = esp_now_send(receiverAddress, (uint8_t*)&message, messageSize);
 
   if (result == ESP_OK) {
     Serial.println("  → Message queued for sending");
@@ -91,4 +83,15 @@ void EspNowHelper::sendMessage() {
         break;
     }
   }
+}
+
+void EspNowHelper::sendScannerConnected() {
+  Serial.println("Sending Scanner Connected Message...");
+
+  ScannerMessage message;
+  message.deviceId = deviceId;
+  message.deviceType = DEVICE_TYPE_SCANNER;
+  message.messageType = MSG_TYPE_CONNECT;
+
+  sendMessage((EspNowHeader&)message, sizeof(message));
 }
