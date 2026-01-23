@@ -14,7 +14,7 @@ void handleScanDeviceButtonPress();
 void handleScanEnvironmentButtonPress();
 void handleExtraButtonPress();
 
-void handleDeviceMessage(const DeviceMessage& msg);
+void handleShieldModuleMessage(const ShieldModuleMessage& msg);
 
 void setup() {
   Serial.begin(115200);
@@ -31,7 +31,7 @@ void setup() {
   tftController.setup();
 
   espNowHelper.begin(hubAddress, DEVICE_ID);
-  espNowHelper.registerModuleMessageHandler(handleDeviceMessage);
+  espNowHelper.registerModuleMessageHandler(handleShieldModuleMessage);
   espNowHelper.sendScannerConnected();
 }
 
@@ -67,19 +67,19 @@ void handleExtraButtonPress() {
   Serial.println("Pressed Extra Button");
 }
 
-void handleDeviceMessage(const DeviceMessage& msg) {
-  Serial.println("Handling Device Message:");
-  Serial.printf("  Device ID: %d\n", msg.deviceId);
+void handleShieldModuleMessage(const ShieldModuleMessage& msg) {
+  Serial.println("Handling Shield Module Message:");
+  Serial.printf("  Shield Module ID: %d\n", msg.deviceId);
   Serial.printf("  Message Type: %d\n", msg.messageType);
   Serial.printf("  Is Calibrated: %s\n", msg.isCalibrated ? "Yes" : "No");
 
-  // Get the index for this device id
+  // Get the index for this shield module id
   int index = ScanResults::getIndexById(msg.deviceId);
   if (index >= 0) {
-    bool connected = true;  // Since we received a message, the device is connected
+    bool connected = true;  // Since we received a message, the shield module is connected
     tftController.updateItemStateIndicator(index, connected, msg.isCalibrated);
     tftController.updateItemStatusLabel(index, connected, msg.isCalibrated);
   } else {
-    Serial.printf("  Warning: Unknown device ID %d\n", msg.deviceId);
+    Serial.printf("  Warning: Unknown shield module ID %d\n", msg.deviceId);
   }
 }
