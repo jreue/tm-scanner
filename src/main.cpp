@@ -1,3 +1,5 @@
+#include <shared_hardware_config.h>
+
 #include "EspNowHelper.h"
 #include "ScanResults.h"
 #include "TftController.h"
