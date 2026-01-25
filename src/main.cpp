@@ -1,3 +1,4 @@
+#include <Button.h>
 #include <shared_hardware_config.h>
 
 #include "EspNowHelper.h"
@@ -7,14 +8,15 @@
 
 TftController tftController;
 
-bool scanInProgress = false;
 uint8_t hubAddress[] = HUB_MAC_ADDRESS;
 EspNowHelper espNowHelper;
 
+void setupButtons();
+
 // Button Handlers
-void handleScanDeviceButtonPress();
-void handleScanEnvironmentButtonPress();
-void handleExtraButtonPress();
+void handleScanDeviceButtonPress(void* button_handle, void* usr_data);
+void handleScanEnvironmentButtonPress(void* button_handle, void* usr_data);
+void handleExtraButtonPress(void* button_handle, void* usr_data);
 
 void handleShieldModuleMessage(const ShieldModuleMessage& msg);
 
@@ -23,12 +25,7 @@ void setup() {
   Serial.println("Scanner Starting...");
   Serial.printf("Scanner Device ID: %d\n", DEVICE_ID);
 
-  Serial.printf("Scan Device PIN: %d\n", SCAN_DEVICE_PIN);
-  Serial.printf("Scan Environment PIN: %d\n", SCAN_ENVIRONMENT_PIN);
-  Serial.printf("Extra PIN: %d\n", EXTRA_PIN);
-  pinMode(SCAN_DEVICE_PIN, INPUT_PULLUP);
-  pinMode(SCAN_ENVIRONMENT_PIN, INPUT_PULLUP);
-  pinMode(EXTRA_PIN, INPUT_PULLUP);
+  setupButtons();
 
   tftController.setup();
 
@@ -38,34 +35,34 @@ void setup() {
 }
 
 void loop() {
-  if (digitalRead(SCAN_DEVICE_PIN) == LOW && !scanInProgress) {
-    scanInProgress = true;
-    handleScanDeviceButtonPress();
-    delay(500);  // Debounce delay
-  }
-
-  if (digitalRead(SCAN_ENVIRONMENT_PIN) == LOW) {
-    handleScanEnvironmentButtonPress();
-  }
-
-  if (digitalRead(EXTRA_PIN) == LOW) {
-    handleExtraButtonPress();
-  }
-
   delay(200);
 }
 
-void handleScanEnvironmentButtonPress() {
-  Serial.println("Pressed Scan Environment Button");
+void setupButtons() {
+  Serial.printf("Scan Device PIN: %d\n", SCAN_DEVICE_PIN);
+  Button* scanDeviceButton = new Button(SCAN_DEVICE_PIN, false);
+  scanDeviceButton->attachSingleClickEventCb(&handleScanDeviceButtonPress, NULL);
+
+  Serial.printf("Scan Environment PIN: %d\n", SCAN_ENVIRONMENT_PIN);
+  Button* scanEnvironmentButton = new Button(SCAN_ENVIRONMENT_PIN, false);
+  scanEnvironmentButton->attachSingleClickEventCb(&handleScanEnvironmentButtonPress, NULL);
+
+  Serial.printf("Extra PIN: %d\n", EXTRA_PIN);
+  Button* extraButton = new Button(EXTRA_PIN, false);
+  extraButton->attachSingleClickEventCb(&handleExtraButtonPress, NULL);
 }
 
-void handleScanDeviceButtonPress() {
+void handleScanDeviceButtonPress(void* button_handle, void* usr_data) {
   Serial.println("Pressed Scan Device Button");
 
   tftController.showDeviceScanScreen();
 }
 
-void handleExtraButtonPress() {
+void handleScanEnvironmentButtonPress(void* button_handle, void* usr_data) {
+  Serial.println("Pressed Scan Environment Button");
+}
+
+void handleExtraButtonPress(void* button_handle, void* usr_data) {
   Serial.println("Pressed Extra Button");
 }
 

@@ -8,6 +8,6 @@
 // ====================
 // Scan Button
 // ====================
-#define SCAN_DEVICE_PIN 32
-#define SCAN_ENVIRONMENT_PIN 33
-#define EXTRA_PIN 25
+#define SCAN_DEVICE_PIN GPIO_NUM_32
+#define SCAN_ENVIRONMENT_PIN GPIO_NUM_33
+#define EXTRA_PIN GPIO_NUM_25
