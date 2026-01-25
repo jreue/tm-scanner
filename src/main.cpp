@@ -29,9 +29,10 @@ void setup() {
 
   tftController.setup();
 
-  espNowHelper.begin(hubAddress, DEVICE_ID);
+  espNowHelper.begin(DEVICE_ID);
+  espNowHelper.addPeer(hubAddress);
   espNowHelper.registerModuleMessageHandler(handleShieldModuleMessage);
-  espNowHelper.sendScannerConnected();
+  espNowHelper.sendScannerConnected(hubAddress);
 }
 
 void loop() {
