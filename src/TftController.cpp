@@ -65,7 +65,7 @@ void TftController::showBootScreen(int cycles) {
 }
 
 void TftController::showMenuScreen() {
-  tft.fillScreen(COLOR_BACKGROUND);
+  tft.fillRectVGradient(0, 0, 480, 320, TFT_DARKGREY, COLOR_BACKGROUND);
 
   renderOuterBorder();
   renderDividerLines();
@@ -104,7 +104,7 @@ void TftController::showMenuScreen() {
 }
 
 void TftController::showDeviceScanScreen() {
-  tft.fillScreen(COLOR_BACKGROUND);
+  tft.fillRectVGradient(0, 0, 480, 320, TFT_DARKGREY, COLOR_BACKGROUND);
 
   renderOuterBorder();
   renderDividerLines();
