@@ -2,10 +2,28 @@
 
 #include "ScanResults.h"
 #include "images.h"
+#include "scan.h"
 
 #define COLOR_BACKGROUND 0x83
 #define COLOR_OUTER_BORDER 0xE9F
 #define COLOR_TITLE_TEXT 0x87FF
+
+// --- Global scan message pool ---
+const char* SCAN_MESSAGES[] = {
+    "Initializing quantum phase array...", "Calibrating temporal sensors...",
+    "Multi-spectrum analysis engaged...",  "Decrypting telemetry stream...",
+    "Syncing with orbital relay...",       "Analyzing subspace harmonics...",
+    "Compiling resonance data...",         "Mapping photon topology...",
+    "Verifying crypto handshake...",       "Integrating neural scan matrix...",
+    "Activating photon amplifiers...",     "Scanning for module signatures...",
+    "Establishing secure link...",         "Extracting signal harmonics...",
+    "Detecting molecular resonance...",    "Aligning quantum field sensors...",
+    "Configuring neural scan matrix...",   "Analyzing electron topology...",
+    "Synchronizing time phase arrays...",  "Decrypting encrypted telemetry...",
+    "Compiling phase resonance data...",   "Mapping subspace frequencies...",
+    "Engaging crypto handshake...",        "Activating orbital relay sync...",
+    "Analyzing photon emission data..."};
+const int SCAN_MESSAGE_POOL_SIZE = sizeof(SCAN_MESSAGES) / sizeof(SCAN_MESSAGES[0]);
 
 TftController::TftController() : tft() {
 }
@@ -15,8 +33,13 @@ void TftController::setup() {
   tft.setRotation(1);  // 1 = landscape, 0 = portrait
 
   enableBacklight();
-  showBootScreen(2);
-  showMainScreen();
+  showBootScreen(3);
+  // showMenuScreen();
+
+  tft.fillScreen(COLOR_BACKGROUND);
+  showScanEnvironmentScreen(true);
+  delay(3000);
+  showScanEnvironmentScreen(false);
 }
 
 void TftController::enableBacklight() {
@@ -41,9 +64,103 @@ void TftController::showBootScreen(int cycles) {
   }
 }
 
-void TftController::showMainScreen() {
+void TftController::showMenuScreen() {
   tft.fillScreen(COLOR_BACKGROUND);
   tft.drawString("Press button to scan", 200, 150);
+}
+
+void TftController::showScanEnvironmentScreen(bool success) {
+  renderScanEnvironmentBackground();
+  renderScanTerminal();
+  tft.fillScreen(COLOR_BACKGROUND);
+  renderScanEnvironmentBackground();
+  renderScanResults(success);
+}
+
+void TftController::renderScanEnvironmentBackground() {
+  tft.fillScreen(COLOR_BACKGROUND);
+  tft.setSwapBytes(true);
+  tft.pushImage(0, 32, 480, 250, scan_image_bits);
+}
+
+void TftController::renderScanTerminal() {
+  // Draw terminal-like rounded rectangle
+  tft.fillRoundRect(243, 70, 225, 186, 7, 0x473F);
+  tft.fillRoundRect(245, 71, 222, 183, 7, 0x948);
+
+  // Wave Icon
+  tft.drawBitmap(440, 80, image_music_sound_wave_bits, 17, 16, TFT_WHITE);
+
+  // Prepare scan sequence: always start and end with fixed messages
+  const char* startMsg = "Connecting...";
+  const char* endMsg = "Scan complete.";
+  const int scanSequenceLen = 9;
+  const int yStart = 86;
+  const int xStart = 255;
+
+  // Select 7 random messages from pool
+  int usedIndices[scanSequenceLen - 2] = {0};
+  for (int i = 0; i < scanSequenceLen - 2; ++i) {
+    int idx;
+    bool unique;
+    do {
+      unique = true;
+      idx = rand() % SCAN_MESSAGE_POOL_SIZE;
+      // Ensure uniqueness
+      for (int j = 0; j < i; ++j) {
+        if (usedIndices[j] == idx) {
+          unique = false;
+          break;
+        }
+      }
+    } while (!unique);
+    usedIndices[i] = idx;
+  }
+
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextFont(1);  // Smallest built-in font (GLCD)
+  tft.setTextSize(1);
+  tft.setFreeFont(NULL);  // Use built-in font, not FreeFont
+
+  // Print start message
+  tft.drawString(startMsg, xStart, yStart);
+  delay(1000 + (rand() % 1001));
+
+  // Print 7 random messages
+  for (int i = 0; i < scanSequenceLen - 2; ++i) {
+    tft.drawString(SCAN_MESSAGES[usedIndices[i]], xStart, yStart + (i + 1) * 18);
+    delay(1000 + (rand() % 1001));
+  }
+
+  // Print end message
+  tft.drawString(endMsg, xStart, yStart + (scanSequenceLen - 1) * 18);
+  delay(1000 + (rand() % 1001));
+}
+
+void TftController::renderScanResults(bool success) {
+  // Info Background
+  tft.fillRoundRect(243, 132, 225, 57, 7, 0x473F);
+  // Border
+  tft.fillRoundRect(245, 133, 222, 55, 7, 0x948);
+  if (success) {
+    // Success Icon
+    tft.drawBitmap(255, 140, image_crosshairs_bits, 15, 16, 0x7E0);
+    // Success Text
+    tft.setTextColor(0x7E0);
+    tft.setTextSize(1);
+    tft.setFreeFont(&FreeSansBold9pt7b);
+    tft.drawString("STRONG MODULE", 281, 141);
+    tft.drawString("SIGNAL FOUND!", 276, 164);
+  } else {
+    // Error Icon
+    tft.drawBitmap(255, 140, image_operation_warning_bits, 16, 16, 0xF800);
+    // Error Text
+    tft.setTextColor(0xF800);
+    tft.setTextSize(1);
+    tft.setFreeFont(&FreeSansBold9pt7b);
+    tft.drawString("NO MODULE", 305, 141);
+    tft.drawString("SIGNAL DETECTED", 277, 164);
+  }
 }
 
 void TftController::showDeviceScanScreen() {
@@ -58,6 +175,41 @@ void TftController::showDeviceScanScreen() {
   renderAllScanItems();
   // Reset text datum to left baseline
   tft.setTextDatum(TL_DATUM);
+}
+
+void TftController::animateRadar() {
+  static float angle = 0.0f;
+  static int prev_x = -1, prev_y = -1;
+  const int origin_x = 141;
+  const int origin_y = 160;
+  const int length = 100;
+  const uint16_t color = TFT_WHITE;
+  const uint16_t bg = COLOR_BACKGROUND;
+
+  // Erase previous line if it exists
+  if (prev_x != -1 && prev_y != -1) {
+    tft.drawLine(origin_x, origin_y, prev_x, prev_y, bg);
+  }
+
+  // Calculate new end point
+  float rad = angle * 3.14159265f / 180.0f;
+  int x2 = origin_x + (int)(length * cos(rad));
+  int y2 = origin_y + (int)(length * sin(rad));
+
+  // Draw new line
+  tft.drawLine(origin_x, origin_y, x2, y2, color);
+
+  // Store for next erase
+  prev_x = x2;
+  prev_y = y2;
+
+  // Increment angle
+  angle += 3.0f;  // Adjust speed as needed
+  if (angle >= 360.0f)
+    angle -= 360.0f;
+
+  // Add a small delay for visible animation (optional)
+  delay(20);
 }
 
 void TftController::renderOuterBorder() {

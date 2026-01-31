@@ -17,12 +17,18 @@ class TftController {
     void updateItemStateIndicator(size_t index, bool connected, bool calibrated);
     void updateItemStatusLabel(size_t index, bool connected, bool calibrated);
     void showDeviceScanScreen();
+    void animateRadar();
+
+    void showBootScreen(int cycles);
+    void showMenuScreen();
+    void showScanEnvironmentScreen(bool success);
 
   private:
     TFT_eSPI tft;
 
-    void showBootScreen(int cycles);
-    void showMainScreen();
+    void renderScanEnvironmentBackground();
+    void renderScanTerminal();
+    void renderScanResults(bool success);
 
     void renderOuterBorder();
     void renderDividerLines();

@@ -36,6 +36,7 @@ void setup() {
 }
 
 void loop() {
+  // tftController.animateRadar();
   delay(200);
 }
 
