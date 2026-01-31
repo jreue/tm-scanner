@@ -34,12 +34,12 @@ void TftController::setup() {
 
   enableBacklight();
   showBootScreen(3);
-  // showMenuScreen();
+  showMenuScreen();
 
-  tft.fillScreen(COLOR_BACKGROUND);
-  showScanEnvironmentScreen(true);
-  delay(3000);
-  showScanEnvironmentScreen(false);
+  // tft.fillScreen(COLOR_BACKGROUND);
+  // showScanEnvironmentScreen(true);
+  // delay(3000);
+  // showScanEnvironmentScreen(false);
 }
 
 void TftController::enableBacklight() {
@@ -66,7 +66,55 @@ void TftController::showBootScreen(int cycles) {
 
 void TftController::showMenuScreen() {
   tft.fillScreen(COLOR_BACKGROUND);
-  tft.drawString("Press button to scan", 200, 150);
+
+  renderOuterBorder();
+  renderDividerLines();
+  renderHeaderText();
+  renderSignalContainer();
+
+  tft.setFreeFont(&FreeSerifBold9pt7b);
+
+  // Select Action Text
+  tft.setTextColor(TFT_WHITE);
+  tft.drawString("Select an Action:", 175, 70);
+
+  tft.setTextColor(0xE9F);
+  tft.setFreeFont(&FreeMonoBold12pt7b);
+
+  // Scan Time Machine Option
+  tft.drawRoundRect(51, 94, 380, 40, 5, 0xE9F);
+  tft.drawEllipse(79, 113, 14, 14, 0xE9F);
+  tft.drawString("SCAN THE TIME MACHINE", 111, 105);
+
+  // Scan Environment Option
+  tft.drawRoundRect(51, 150, 380, 40, 5, 0xE9F);
+  tft.drawEllipse(79, 169, 14, 14, 0xE9F);
+  tft.drawString("SCAN THE ENVIRONMENT", 111, 161);
+
+  // Return Home Option
+  tft.drawRoundRect(51, 208, 380, 40, 5, 0xE9F);
+  tft.drawEllipse(79, 227, 14, 14, 0xE9F);
+  tft.drawString("RETURN TO HOME SCREEN", 111, 219);
+
+  tft.setTextColor(0xFFFF);
+  tft.setFreeFont(&FreeSansBold12pt7b);
+  tft.drawString("A", 71, 104);
+  tft.drawString("B", 71, 160);
+  tft.drawString("C", 71, 218);
+}
+
+void TftController::showDeviceScanScreen() {
+  tft.fillScreen(COLOR_BACKGROUND);
+
+  renderOuterBorder();
+  renderDividerLines();
+  renderHeaderText();
+  renderSignalContainer();
+  // renderRemainingTimeLabel();
+  // renderRemainingTimeSuffix();
+  renderAllScanItems();
+  // Reset text datum to left baseline
+  tft.setTextDatum(TL_DATUM);
 }
 
 void TftController::showScanEnvironmentScreen(bool success) {
@@ -161,20 +209,6 @@ void TftController::renderScanResults(bool success) {
     tft.drawString("NO MODULE", 305, 141);
     tft.drawString("SIGNAL DETECTED", 277, 164);
   }
-}
-
-void TftController::showDeviceScanScreen() {
-  tft.fillScreen(COLOR_BACKGROUND);
-
-  renderOuterBorder();
-  renderDividerLines();
-  renderHeaderText();
-  renderSignalContainer();
-  renderRemainingTimeLabel();
-  renderRemainingTimeSuffix();
-  renderAllScanItems();
-  // Reset text datum to left baseline
-  tft.setTextDatum(TL_DATUM);
 }
 
 void TftController::animateRadar() {
