@@ -56,16 +56,17 @@ void setupButtons() {
 
 void handleScanDeviceButtonPress(void* button_handle, void* usr_data) {
   Serial.println("Pressed Scan Device Button");
-
   tftController.showDeviceScanScreen();
 }
 
 void handleScanEnvironmentButtonPress(void* button_handle, void* usr_data) {
   Serial.println("Pressed Scan Environment Button");
+  tftController.showScanEnvironmentScreen(true);
 }
 
 void handleExtraButtonPress(void* button_handle, void* usr_data) {
   Serial.println("Pressed Extra Button");
+  tftController.showMenuScreen();
 }
 
 void handleShieldModuleMessage(const ShieldModuleMessage& msg) {

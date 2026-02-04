@@ -8,6 +8,11 @@
 #define COLOR_OUTER_BORDER 0xE9F
 #define COLOR_TITLE_TEXT 0x87FF
 
+#define COLOR_LIGHT_BLUE 0xE9F
+#define COLOR_DARK_BLUE 0x948
+#define COLOR_SUCCESS_GREEN TFT_GREEN
+#define COLOR_FAILURE_RED TFT_RED
+
 // --- Global scan message pool ---
 const char* SCAN_MESSAGES[] = {
     "Initializing quantum phase array...", "Calibrating temporal sensors...",
@@ -35,11 +40,6 @@ void TftController::setup() {
   enableBacklight();
   showBootScreen(3);
   showMenuScreen();
-
-  // tft.fillScreen(COLOR_BACKGROUND);
-  // showScanEnvironmentScreen(true);
-  // delay(3000);
-  // showScanEnvironmentScreen(false);
 }
 
 void TftController::enableBacklight() {
@@ -72,35 +72,25 @@ void TftController::showMenuScreen() {
   renderHeaderText();
   renderSignalContainer();
 
-  tft.setFreeFont(&FreeSerifBold9pt7b);
-
-  // Select Action Text
-  tft.setTextColor(TFT_WHITE);
-  tft.drawString("Select an Action:", 175, 70);
-
-  tft.setTextColor(0xE9F);
-  tft.setFreeFont(&FreeMonoBold12pt7b);
-
   // Scan Time Machine Option
-  tft.drawRoundRect(51, 94, 380, 40, 5, 0xE9F);
-  tft.drawEllipse(79, 113, 14, 14, 0xE9F);
+  tft.drawRoundRect(51, 94, 380, 40, 5, COLOR_LIGHT_BLUE);
+  tft.drawEllipse(79, 113, 14, 14, COLOR_LIGHT_BLUE);
+  tft.setTextColor(COLOR_LIGHT_BLUE);
+  tft.setFreeFont(&FreeMonoBold12pt7b);
   tft.drawString("SCAN THE TIME MACHINE", 111, 105);
-
-  // Scan Environment Option
-  tft.drawRoundRect(51, 150, 380, 40, 5, 0xE9F);
-  tft.drawEllipse(79, 169, 14, 14, 0xE9F);
-  tft.drawString("SCAN THE ENVIRONMENT", 111, 161);
-
-  // Return Home Option
-  tft.drawRoundRect(51, 208, 380, 40, 5, 0xE9F);
-  tft.drawEllipse(79, 227, 14, 14, 0xE9F);
-  tft.drawString("RETURN TO HOME SCREEN", 111, 219);
-
-  tft.setTextColor(0xFFFF);
+  tft.setTextColor(TFT_GREEN);
   tft.setFreeFont(&FreeSansBold12pt7b);
   tft.drawString("A", 71, 104);
+
+  // Scan Environment Option
+  tft.drawRoundRect(51, 150, 380, 40, 5, COLOR_LIGHT_BLUE);
+  tft.drawEllipse(79, 169, 14, 14, COLOR_LIGHT_BLUE);
+  tft.setTextColor(COLOR_LIGHT_BLUE);
+  tft.setFreeFont(&FreeMonoBold12pt7b);
+  tft.drawString("SCAN THE ENVIRONMENT", 111, 161);
+  tft.setTextColor(TFT_YELLOW);
+  tft.setFreeFont(&FreeSansBold12pt7b);
   tft.drawString("B", 71, 160);
-  tft.drawString("C", 71, 218);
 }
 
 void TftController::showDeviceScanScreen() {
@@ -110,11 +100,12 @@ void TftController::showDeviceScanScreen() {
   renderDividerLines();
   renderHeaderText();
   renderSignalContainer();
-  // renderRemainingTimeLabel();
-  // renderRemainingTimeSuffix();
+
   renderAllScanItems();
   // Reset text datum to left baseline
   tft.setTextDatum(TL_DATUM);
+
+  renderHomeFooter();
 }
 
 void TftController::showScanEnvironmentScreen(bool success) {
@@ -123,6 +114,8 @@ void TftController::showScanEnvironmentScreen(bool success) {
   tft.fillScreen(COLOR_BACKGROUND);
   renderScanEnvironmentBackground();
   renderScanResults(success);
+
+  renderHomeFooter();
 }
 
 void TftController::renderScanEnvironmentBackground() {
@@ -132,9 +125,10 @@ void TftController::renderScanEnvironmentBackground() {
 }
 
 void TftController::renderScanTerminal() {
-  // Draw terminal-like rounded rectangle
-  tft.fillRoundRect(243, 70, 225, 186, 7, 0x473F);
-  tft.fillRoundRect(245, 71, 222, 183, 7, 0x948);
+  // Terminal Border
+  tft.fillRoundRect(243, 70, 225, 186, 7, COLOR_LIGHT_BLUE);
+  // Terminal Fill
+  tft.fillRoundRect(245, 71, 222, 183, 7, COLOR_DARK_BLUE);
 
   // Wave Icon
   tft.drawBitmap(440, 80, image_music_sound_wave_bits, 17, 16, TFT_WHITE);
@@ -186,29 +180,40 @@ void TftController::renderScanTerminal() {
 }
 
 void TftController::renderScanResults(bool success) {
-  // Info Background
-  tft.fillRoundRect(243, 132, 225, 57, 7, 0x473F);
-  // Border
-  tft.fillRoundRect(245, 133, 222, 55, 7, 0x948);
+  // Info Border
+  tft.fillRoundRect(243, 132, 225, 57, 7, COLOR_LIGHT_BLUE);
+  // Info Fill
+  tft.fillRoundRect(245, 133, 222, 55, 7, COLOR_DARK_BLUE);
   if (success) {
     // Success Icon
-    tft.drawBitmap(255, 140, image_crosshairs_bits, 15, 16, 0x7E0);
+    tft.drawBitmap(255, 140, image_crosshairs_bits, 15, 16, COLOR_SUCCESS_GREEN);
     // Success Text
-    tft.setTextColor(0x7E0);
     tft.setTextSize(1);
+    tft.setTextColor(COLOR_SUCCESS_GREEN);
     tft.setFreeFont(&FreeSansBold9pt7b);
     tft.drawString("STRONG MODULE", 281, 141);
-    tft.drawString("SIGNAL FOUND!", 276, 164);
+    tft.drawString("SIGNAL DETECTED!", 277, 164);
   } else {
     // Error Icon
-    tft.drawBitmap(255, 140, image_operation_warning_bits, 16, 16, 0xF800);
+    tft.drawBitmap(255, 140, image_operation_warning_bits, 16, 16, COLOR_FAILURE_RED);
     // Error Text
-    tft.setTextColor(0xF800);
     tft.setTextSize(1);
+    tft.setTextColor(COLOR_FAILURE_RED);
     tft.setFreeFont(&FreeSansBold9pt7b);
     tft.drawString("NO MODULE", 305, 141);
     tft.drawString("SIGNAL DETECTED", 277, 164);
   }
+}
+void TftController::renderHomeFooter() {
+  tft.setTextColor(TFT_WHITE);
+  tft.setFreeFont(&FreeMonoBold9pt7b);
+  tft.drawString("RETURN TO HOME SCREEN", 143, 286);
+
+  tft.drawEllipse(122, 293, 10, 10, COLOR_LIGHT_BLUE);
+
+  tft.setTextColor(TFT_WHITE);
+  tft.setFreeFont(&FreeSansBold9pt7b);
+  tft.drawString("C", 115, 286);
 }
 
 void TftController::animateRadar() {
@@ -258,9 +263,10 @@ void TftController::renderDividerLines() {
 }
 
 void TftController::renderHeaderText() {
-  tft.setTextColor(0xE9F);
   tft.setTextSize(1);
+  tft.setTextColor(COLOR_LIGHT_BLUE);
   tft.setFreeFont(&FreeSansBold12pt7b);
+
   tft.setTextDatum(TC_DATUM);
   tft.drawString("SHIELD DIAGNOSTICS UNIT", 240, 31);
   tft.setTextDatum(TL_DATUM);
@@ -269,24 +275,11 @@ void TftController::renderHeaderText() {
 void TftController::renderSignalContainer() {
   tft.fillRoundRect(187, 1, 106, 17, 3, COLOR_OUTER_BORDER);
   // wifi_not_connected
-  tft.drawBitmap(197, 2, image_wifi_not_connected_bits, 19, 16, 0x0);
+  tft.drawBitmap(197, 2, image_wifi_not_connected_bits, 19, 16, TFT_BLACK);
   // network_not_connected
-  tft.drawBitmap(233, 2, image_network_not_connected_bits, 15, 16, 0x0);
+  tft.drawBitmap(233, 2, image_network_not_connected_bits, 15, 16, TFT_BLACK);
   // battery_full
-  tft.drawBitmap(262, 2, image_battery_full_bits, 24, 16, 0x0);
-}
-
-void TftController::renderRemainingTimeLabel() {
-  tft.setFreeFont(&FreeSansBold9pt7b);
-  tft.drawString("THERMAL MELTDOWN IN:", 33, 286);
-}
-
-void TftController::renderRemainingTimeSuffix() {
-  // HH MM SS Suffix
-  tft.setFreeFont(&FreeMonoBold12pt7b);
-  tft.drawString("H", 313, 283);
-  tft.drawString("M", 368, 283);
-  tft.drawString("S", 425, 283);
+  tft.drawBitmap(262, 2, image_battery_full_bits, 24, 16, TFT_BLACK);
 }
 
 void TftController::renderAllScanItems() {
@@ -340,9 +333,9 @@ void TftController::updateItemStatusLabel(size_t index, bool connected, bool cal
 void TftController::renderItemName(size_t index, const String& name) {
   int32_t y = calculateItemY(index);
 
-  tft.setTextDatum(L_BASELINE);
-  tft.setTextColor(0xE9F);
+  tft.setTextColor(COLOR_LIGHT_BLUE);
   tft.setFreeFont(&FreeSerifBold9pt7b);
+  tft.setTextDatum(L_BASELINE);
   tft.drawString(name, 55, y + 13);
 }
 
@@ -373,20 +366,4 @@ int32_t TftController::calculateItemY(size_t index) {
   int32_t startY = 75;
   int32_t lineHeight = 25;
   return startY + index * lineHeight;
-}
-
-void TftController::updateRemainingTime(int32_t hours, int32_t minutes, int32_t seconds) {
-  tft.fillRect(282, 285, 28, 15, COLOR_BACKGROUND);  // Clear Hours
-  tft.fillRect(337, 285, 28, 15, COLOR_BACKGROUND);  // Clear Minutes
-  tft.fillRect(394, 285, 28, 15, COLOR_BACKGROUND);  // Clear Seconds
-
-  tft.setTextColor(0xEF7D);
-  tft.setFreeFont(&FreeMonoBold12pt7b);
-  char buf[3];
-  sprintf(buf, "%02d", hours);
-  tft.drawRightString(buf, 310, 283, 1);
-  sprintf(buf, "%02d", minutes);
-  tft.drawRightString(buf, 365, 283, 1);
-  sprintf(buf, "%02d", seconds);
-  tft.drawRightString(buf, 422, 283, 1);
 }

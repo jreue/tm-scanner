@@ -13,15 +13,16 @@ class TftController {
 
     void enableBacklight();
     void disableBacklight();
-    void updateRemainingTime(int32_t hours, int32_t minutes, int32_t seconds);
-    void updateItemStateIndicator(size_t index, bool connected, bool calibrated);
-    void updateItemStatusLabel(size_t index, bool connected, bool calibrated);
-    void showDeviceScanScreen();
-    void animateRadar();
 
     void showBootScreen(int cycles);
     void showMenuScreen();
+    void showDeviceScanScreen();
     void showScanEnvironmentScreen(bool success);
+
+    void updateItemStateIndicator(size_t index, bool connected, bool calibrated);
+    void updateItemStatusLabel(size_t index, bool connected, bool calibrated);
+
+    void animateRadar();
 
   private:
     TFT_eSPI tft;
@@ -34,13 +35,13 @@ class TftController {
     void renderDividerLines();
     void renderSignalContainer();
     void renderHeaderText();
-    void renderRemainingTimeLabel();
-    void renderRemainingTimeSuffix();
 
     void renderAllScanItems();
+    void renderHomeFooter();
     void renderScanResultItem(const ScanResult& result, size_t index);
     void renderItemStateIndicator(size_t index, bool connected, bool calibrated);
     void renderItemName(size_t index, const String& name);
     void renderItemStatusLabel(size_t index, bool connected, bool calibrated);
+
     int32_t calculateItemY(size_t index);
 };
