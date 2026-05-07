@@ -78,7 +78,7 @@ void TftController::showMenuScreen() {
   tft.setTextColor(COLOR_LIGHT_BLUE);
   tft.setFreeFont(&FreeMonoBold12pt7b);
   tft.drawString("SCAN THE TIME MACHINE", 111, 105);
-  tft.setTextColor(TFT_GREEN);
+  tft.setTextColor(TFT_WHITE);
   tft.setFreeFont(&FreeSansBold12pt7b);
   tft.drawString("A", 71, 104);
 
@@ -88,7 +88,7 @@ void TftController::showMenuScreen() {
   tft.setTextColor(COLOR_LIGHT_BLUE);
   tft.setFreeFont(&FreeMonoBold12pt7b);
   tft.drawString("SCAN THE ENVIRONMENT", 111, 161);
-  tft.setTextColor(TFT_YELLOW);
+  tft.setTextColor(TFT_WHITE);
   tft.setFreeFont(&FreeSansBold12pt7b);
   tft.drawString("B", 71, 160);
 }
