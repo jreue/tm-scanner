@@ -6,10 +6,24 @@
 #include "TftController.h"
 #include "hardware_config.h"
 
+struct ValidDate {
+    uint8_t month;
+    uint8_t day;
+    uint16_t year;
+};
+
+const ValidDate VALID_DATES[] = {
+    {12, 25, 1975},
+    {2, 1, 1977},
+};
+const int VALID_DATES_COUNT = sizeof(VALID_DATES) / sizeof(ValidDate);
+
 TftController tftController;
 
 uint8_t hubAddress[] = HUB_MAC_ADDRESS;
 EspNowHelper espNowHelper;
+
+DateMessage currentDate = {month : 0, day : 0, year : 0};
 
 void setupButtons();
 
@@ -19,6 +33,8 @@ void handleScanEnvironmentButtonPress(void* button_handle, void* usr_data);
 void handleExtraButtonPress(void* button_handle, void* usr_data);
 
 void handleShieldModuleMessage(const ShieldModuleMessage& msg);
+void handleDateMessage(const DateMessage& msg);
+bool isValidDate();
 
 void setup() {
   Serial.begin(115200);
@@ -32,6 +48,7 @@ void setup() {
   espNowHelper.begin(DEVICE_ID);
   espNowHelper.addPeer(hubAddress);
   espNowHelper.registerModuleMessageHandler(handleShieldModuleMessage);
+  espNowHelper.registerDateMessageHandler(handleDateMessage);
   espNowHelper.sendScannerConnected(hubAddress);
 }
 
@@ -61,12 +78,28 @@ void handleScanDeviceButtonPress(void* button_handle, void* usr_data) {
 
 void handleScanEnvironmentButtonPress(void* button_handle, void* usr_data) {
   Serial.println("Pressed Scan Environment Button");
-  tftController.showScanEnvironmentScreen(true);
+  tftController.showScanEnvironmentScreen(isValidDate());
 }
 
 void handleExtraButtonPress(void* button_handle, void* usr_data) {
   Serial.println("Pressed Extra Button");
   tftController.showMenuScreen();
+}
+
+bool isValidDate() {
+  for (int i = 0; i < VALID_DATES_COUNT; ++i) {
+    if (VALID_DATES[i].month == currentDate.month && VALID_DATES[i].day == currentDate.day &&
+        VALID_DATES[i].year == currentDate.year) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void handleDateMessage(const DateMessage& msg) {
+  Serial.println("Handling Date Message:");
+  Serial.printf("  Date: %02d/%02d/%04d\n", msg.month, msg.day, msg.year);
+  currentDate = msg;
 }
 
 void handleShieldModuleMessage(const ShieldModuleMessage& msg) {
