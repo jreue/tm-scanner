@@ -38,7 +38,7 @@ void TftController::setup() {
   tft.setRotation(1);  // 1 = landscape, 0 = portrait
 
   enableBacklight();
-  showBootScreen(3);
+  showBootScreen(8);
   showMenuScreen();
 }
 
