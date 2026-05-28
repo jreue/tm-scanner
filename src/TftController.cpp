@@ -65,6 +65,7 @@ void TftController::showBootScreen(int cycles) {
 }
 
 void TftController::showMenuScreen() {
+  currentScreen = Screen::MENU;
   tft.fillRectVGradient(0, 0, 480, 320, TFT_DARKGREY, COLOR_BACKGROUND);
 
   renderOuterBorder();
@@ -94,6 +95,7 @@ void TftController::showMenuScreen() {
 }
 
 void TftController::showDeviceScanScreen() {
+  currentScreen = Screen::DEVICE_SCAN;
   tft.fillRectVGradient(0, 0, 480, 320, TFT_DARKGREY, COLOR_BACKGROUND);
 
   renderOuterBorder();
@@ -109,6 +111,7 @@ void TftController::showDeviceScanScreen() {
 }
 
 void TftController::showScanEnvironmentScreen(bool success) {
+  currentScreen = Screen::ENV_SCAN;
   renderScanEnvironmentBackground();
   renderScanTerminal();
   tft.fillScreen(COLOR_BACKGROUND);
@@ -290,12 +293,14 @@ void TftController::renderAllScanItems() {
   }
 }
 
-void TftController::renderScanResultItem(const ScanResult& result, size_t index) {
-  int32_t y = calculateItemY(index);
+bool TftController::isDeviceScanActive() const {
+  return currentScreen == Screen::DEVICE_SCAN;
+}
 
-  renderItemStateIndicator(index, false, false);
+void TftController::renderScanResultItem(const ScanResult& result, size_t index) {
+  renderItemStateIndicator(index, result.connected, result.calibrated);
   renderItemName(index, result.name);
-  renderItemStatusLabel(index, false, false);
+  renderItemStatusLabel(index, result.connected, result.calibrated);
 }
 
 void TftController::renderItemStateIndicator(size_t index, bool connected, bool calibrated) {
@@ -308,26 +313,6 @@ void TftController::renderItemStateIndicator(size_t index, bool connected, bool 
   } else {
     tft.drawBitmap(33, y, image_choice_bullet_on_bits, 15, 16, TFT_GREEN);
   }
-}
-
-void TftController::updateItemStateIndicator(size_t index, bool connected, bool calibrated) {
-  int32_t y = calculateItemY(index);
-
-  // Clear the area where the bitmap is drawn
-  tft.fillRect(33, y, 15, 16, COLOR_BACKGROUND);
-
-  // Redraw with new state
-  renderItemStateIndicator(index, connected, calibrated);
-}
-
-void TftController::updateItemStatusLabel(size_t index, bool connected, bool calibrated) {
-  int32_t y = calculateItemY(index);
-
-  // Clear the area where the status label is drawn
-  tft.fillRect(300, y - 3, 155, 23, COLOR_BACKGROUND);
-
-  // Redraw with new state
-  renderItemStatusLabel(index, connected, calibrated);
 }
 
 void TftController::renderItemName(size_t index, const String& name) {

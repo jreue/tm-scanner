@@ -78,9 +78,10 @@ void handleShieldModuleMessage(const ShieldModuleMessage& msg) {
   // Get the index for this shield module id
   int index = ScanResults::getIndexById(msg.deviceId);
   if (index >= 0) {
-    bool connected = true;  // Since we received a message, the shield module is connected
-    tftController.updateItemStateIndicator(index, connected, msg.isCalibrated);
-    tftController.updateItemStatusLabel(index, connected, msg.isCalibrated);
+    ScanResults::updateState(index, true, msg.isCalibrated);
+    if (tftController.isDeviceScanActive()) {
+      tftController.showDeviceScanScreen();
+    }
   } else {
     Serial.printf("  Warning: Unknown shield module ID %d\n", msg.deviceId);
   }

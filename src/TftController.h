@@ -19,12 +19,14 @@ class TftController {
     void showDeviceScanScreen();
     void showScanEnvironmentScreen(bool success);
 
-    void updateItemStateIndicator(size_t index, bool connected, bool calibrated);
-    void updateItemStatusLabel(size_t index, bool connected, bool calibrated);
+    bool isDeviceScanActive() const;
 
     void animateRadar();
 
   private:
+    enum class Screen { NONE, MENU, DEVICE_SCAN, ENV_SCAN };
+    Screen currentScreen = Screen::NONE;
+
     TFT_eSPI tft;
 
     void renderScanEnvironmentBackground();
