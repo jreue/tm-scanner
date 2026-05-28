@@ -1,10 +1,13 @@
 #include "ScanResults.h"
 
 const ScanResult ScanResults::results[] = {
-    {101, "Temporal Drift Sensor"},    {102, "Chrono-Stabilizer"},
-    {103, "Quantum Flux Regulator"},   {104, "Dimensional Phase Modulator"},
-    {105, "Plasma Containment Field"}, {106, "Neutrino Emission Matrix"},
-    {107, "Environment Scanner"},      {108, "Uranium Core"}};
+    {101, "Plasma Field Selector"},        // tm-device-switch
+    {102, "Planar Drift Matrix"},          // tm-device-orientation
+    {103, "Chrono Stabilizer Cube"},       // tm-device-cube
+    {104, "Dimensional Phase Modulator"},  // tm-device-rings
+    {105, "Uranium Fuel Cell"},            // tm-device-temperature
+    {106, "Polar Neutrino Disruptor"},     // tm-device-keycard
+};
 
 const size_t ScanResults::resultCount = sizeof(ScanResults::results) / sizeof(ScanResult);
 
