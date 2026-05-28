@@ -20,12 +20,18 @@ class TftController {
     void showScanEnvironmentScreen(bool success);
 
     bool isDeviceScanActive() const;
+    bool isMenuActive() const;
+    void setCurrentDate(uint8_t month, uint8_t day, uint16_t year);
 
     void animateRadar();
 
   private:
     enum class Screen { NONE, MENU, DEVICE_SCAN, ENV_SCAN };
     Screen currentScreen = Screen::NONE;
+
+    uint8_t _dateMonth = 0;
+    uint8_t _dateDay = 0;
+    uint16_t _dateYear = 0;
 
     TFT_eSPI tft;
 

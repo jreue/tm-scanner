@@ -54,6 +54,16 @@ bool TftController::isDeviceScanActive() const {
   return currentScreen == Screen::DEVICE_SCAN;
 }
 
+bool TftController::isMenuActive() const {
+  return currentScreen == Screen::MENU;
+}
+
+void TftController::setCurrentDate(uint8_t month, uint8_t day, uint16_t year) {
+  _dateMonth = month;
+  _dateDay = day;
+  _dateYear = year;
+}
+
 void TftController::showBootScreen(int cycles) {
   tft.fillScreen(COLOR_BACKGROUND);
   String base = "BOOTING";
@@ -96,6 +106,17 @@ void TftController::showMenuScreen() {
   tft.setTextColor(TFT_WHITE);
   tft.setFreeFont(&FreeSansBold12pt7b);
   tft.drawString("B", 71, 160);
+
+  if (_dateMonth != 0) {
+    char dateBuf[26];
+    snprintf(dateBuf, sizeof(dateBuf), "Current Date: %02d/%02d/%04d", _dateMonth, _dateDay,
+             _dateYear);
+    tft.setTextColor(TFT_WHITE);
+    tft.setFreeFont(&FreeMonoBold9pt7b);
+    tft.setTextDatum(TC_DATUM);
+    tft.drawString(dateBuf, 240, 284);
+    tft.setTextDatum(TL_DATUM);
+  }
 }
 
 void TftController::showDeviceScanScreen() {

@@ -100,6 +100,10 @@ void handleDateMessage(const DateMessage& msg) {
   Serial.println("Handling Date Message:");
   Serial.printf("  Date: %02d/%02d/%04d\n", msg.month, msg.day, msg.year);
   currentDate = msg;
+  tftController.setCurrentDate(msg.month, msg.day, msg.year);
+  if (tftController.isMenuActive()) {
+    tftController.showMenuScreen();
+  }
 }
 
 void handleShieldModuleMessage(const ShieldModuleMessage& msg) {
