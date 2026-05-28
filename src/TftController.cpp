@@ -88,24 +88,36 @@ void TftController::showMenuScreen() {
   renderSignalContainer();
 
   // Scan Time Machine Option
-  tft.drawRoundRect(51, 94, 380, 40, 5, COLOR_LIGHT_BLUE);
-  tft.drawEllipse(79, 113, 14, 14, COLOR_LIGHT_BLUE);
+  tft.drawRoundRect(51, 80, 380, 79, 5, COLOR_LIGHT_BLUE);
+  tft.drawEllipse(79, 120, 14, 14, COLOR_LIGHT_BLUE);
   tft.setTextColor(COLOR_LIGHT_BLUE);
   tft.setFreeFont(&FreeMonoBold12pt7b);
-  tft.drawString("SCAN THE TIME MACHINE", 111, 105);
+  tft.drawString("SCAN THE TIME MACHINE", 111, 91);
   tft.setTextColor(TFT_WHITE);
   tft.setFreeFont(&FreeSansBold12pt7b);
-  tft.drawString("A", 71, 104);
+  tft.drawString("A", 71, 111);
+
+  tft.setTextColor(TFT_WHITE);
+  tft.setFreeFont(NULL);
+  tft.setTextSize(1);
+  tft.drawString("Read shield module diagnostics from", 111, 117);
+  tft.drawString("the connected Time Machine unit.", 111, 130);
 
   // Scan Environment Option
-  tft.drawRoundRect(51, 150, 380, 40, 5, COLOR_LIGHT_BLUE);
-  tft.drawEllipse(79, 169, 14, 14, COLOR_LIGHT_BLUE);
+  tft.drawRoundRect(51, 175, 380, 79, 5, COLOR_LIGHT_BLUE);
+  tft.drawEllipse(79, 215, 14, 14, COLOR_LIGHT_BLUE);
   tft.setTextColor(COLOR_LIGHT_BLUE);
   tft.setFreeFont(&FreeMonoBold12pt7b);
-  tft.drawString("SCAN THE ENVIRONMENT", 111, 161);
+  tft.drawString("SCAN THE ENVIRONMENT", 111, 186);
   tft.setTextColor(TFT_WHITE);
   tft.setFreeFont(&FreeSansBold12pt7b);
-  tft.drawString("B", 71, 160);
+  tft.drawString("B", 71, 206);
+
+  tft.setTextColor(TFT_WHITE);
+  tft.setFreeFont(NULL);
+  tft.setTextSize(1);
+  tft.drawString("Detect active shield module signatures", 111, 212);
+  tft.drawString("present in this time phase.", 111, 226);
 
   if (_dateMonth != 0) {
     char dateBuf[26];
