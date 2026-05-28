@@ -50,6 +50,10 @@ void TftController::disableBacklight() {
   digitalWrite(TFT_BL, LOW);
 }
 
+bool TftController::isDeviceScanActive() const {
+  return currentScreen == Screen::DEVICE_SCAN;
+}
+
 void TftController::showBootScreen(int cycles) {
   tft.fillScreen(COLOR_BACKGROUND);
   String base = "BOOTING";
@@ -291,10 +295,6 @@ void TftController::renderAllScanItems() {
   for (size_t i = 0; i < count; ++i) {
     renderScanResultItem(results[i], i);
   }
-}
-
-bool TftController::isDeviceScanActive() const {
-  return currentScreen == Screen::DEVICE_SCAN;
 }
 
 void TftController::renderScanResultItem(const ScanResult& result, size_t index) {
