@@ -13,8 +13,19 @@ struct ValidDate {
 };
 
 const ValidDate VALID_DATES[] = {
-    {12, 25, 1975},
-    {2, 1, 1977},
+    {6, 22, 2056},  // Start - Initial Future Travel date
+    {3, 16, 1997},  // Shield Module 1
+    {2, 2, 2010},   // Shield Module 2
+    {7, 14, 1985},  // Shield Module 3
+    {4, 16, 2006},  // Shield Module 4
+    {10, 8, 1965},  // Shield Module 5
+    {11, 5, 1981},  // Shield Module 6
+    {6, 21, 2026},  // Safeguard start|finish date
+    {6, 22, 2026},  // Safeguard start|finish date
+    {6, 23, 2026},  // Safeguard start|finish date
+    {6, 24, 2026},  // Finish - Return to present time date
+    {6, 25, 2026},  // Safeguard start|finish date
+    {6, 26, 2026}   // Safeguard start|finish date
 };
 const int VALID_DATES_COUNT = sizeof(VALID_DATES) / sizeof(ValidDate);
 
